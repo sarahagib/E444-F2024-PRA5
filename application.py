@@ -28,7 +28,8 @@ def predict():
 
     try:
         # get text from the request
-        input_text = request.get_json()
+        print(request)
+        input_text = request.form.get('text')
         
         if not input_text:
             return jsonify({'error': 'No input'}), 400
@@ -37,16 +38,16 @@ def predict():
         
         # predict using provided model
         predictions = []
-        for i in input_text:
-            vectorized_input = vectorizer.transform([i])
-            prediction = loaded_model.predict(vectorized_input)[0]
         
-            if prediction == 'FAKE':
-                predictions.append(1)
-            elif prediction == 'REAL':
-                predictions.append(0)
-            else:
-                raise ValueError(f"Unexpected prediction value: {prediction}")
+        vectorized_input = vectorizer.transform([input_text])
+        prediction = loaded_model.predict(vectorized_input)[0]
+    
+        if prediction == 'FAKE':
+            predictions.append(1)
+        elif prediction == 'REAL':
+            predictions.append(0)
+        else:
+            raise ValueError(f"Unexpected prediction value: {prediction}")
         
         print("Prediction:", predictions)
         

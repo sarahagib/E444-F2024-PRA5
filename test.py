@@ -14,7 +14,7 @@ def api_call(url, test):
     end = time.time()
 
     latency = end - start 
-    return result.status_code, latency 
+    return result.status_code, latency, result
 
 def boxplot():
     df = pd.read_csv("test_results.csv")
@@ -35,18 +35,22 @@ def boxplot():
     return
 
 def test():
-    url = "http://ece444-pra5-try2.ca-central-1.elasticbeanstalk.com/"
+    url = "http://ece444-pra5-ml-env.eba-xqkmjmmw.us-east-1.elasticbeanstalk.com/predict"
+    url2 = "http://ece444-pra5-ml-env-2.eba-xqkmjmmw.us-east-1.elasticbeanstalk.com/predict"
+   
 
-    test_text = ["Donald Trump won the 2024 Election",  # False
-                "Toronto is the Capital of Ontario",    # True 
-                "The USSR exists today",                # False 
-                "Christmas is celebrated in december"]  # True
+    test_text = ["Donald Trump won the 2024 Election", 
+                 "The earth is flat"]
     test_results = []
+
+    # get predictions on sample test
+    for test in test_text: 
+        response = requests.post(url2, data={'text': test})
+        print(response, response.text)
 
     print("starting api calls")
     for i in range(100):
         for num, text in enumerate(test_text):
-            print(num, text)
             status_code, latency = api_call(url, text)
             test_results.append([num, text, latency])
     
@@ -59,5 +63,5 @@ def test():
     print("finished writing results to csv") 
     boxplot()
 
-    if __name__ == "__main__":
-        test()
+if __name__ == "__main__":
+    test()
